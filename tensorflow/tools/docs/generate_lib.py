@@ -279,6 +279,7 @@ def extract(py_modules, private_map, do_not_descend_map):
   traverse.traverse(py_modules[0][1], api_visitor)
 
   # Traverse all py_modules after the first:
+  if len(py_modules) > 1:
     for module_name, module in py_modules[1:]:
       visitor.set_root_name(module_name)
       api_visitor.set_root_name(module_name)
