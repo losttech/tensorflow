@@ -327,9 +327,7 @@ def build_doc_index(src_dir):
       title_parser = _GetMarkdownTitle()
       title_parser.process(os.path.join(dirpath, base_name))
       if title_parser.title is None:
-        msg = ('`{}` has no markdown title (# title)'.format(
-            os.path.join(dirpath, base_name)))
-        raise ValueError(msg)
+        title_parser.title = base_name
       key_parts = os.path.join(suffix, base_name[:-3]).split('/')
       if key_parts[-1] == 'index':
         key_parts = key_parts[:-1]
