@@ -1502,8 +1502,7 @@ def docs_for_object(full_name, py_object, parser_config):
     page_info.collect_docs_for_module(parser_config)
 
   else:
-    raise RuntimeError('Cannot make docs for object %s: %r' % (full_name,
-                                                               py_object))
+    return None
 
   relative_path = os.path.relpath(
       path='.', start=os.path.dirname(documentation_path(full_name)) or '.')
