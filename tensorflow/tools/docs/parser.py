@@ -61,9 +61,18 @@ def is_free_function(py_object, full_name, index):
 IDENTIFIER_RE = r'[a-zA-Z_]\w*'
 
 
-class TFDocsError(Exception):
-  pass
+def _is_inspectable(object):
+  try:
+    tf_inspect.isclass(object) and tf_inspect.ismodule(object)
+    return True
+  except ImportError:
+    return False
 
+
+class TFDocsError(Exception):
+  def __init__(self, message, *args, **kwargs):
+      super().__init__(message, *args, **kwargs)
+      self.message = message
 
 class _Errors(object):
   """A collection of errors."""
@@ -214,8 +223,7 @@ class ReferenceResolver(object):
     is_fragment = {}
     for name, obj in visitor.index.items():
       has_page = (
-          tf_inspect.isclass(obj) or tf_inspect.ismodule(obj) or
-          is_free_function(obj, name, visitor.index))
+          _is_inspectable(obj) or is_free_function(obj, name, visitor.index))
 
       is_fragment[name] = not has_page
 
@@ -1428,6 +1436,9 @@ class _ModulePageInfo(object):
       member_full_name = self.full_name + '.' + name if self.full_name else name
       member = parser_config.py_name_to_object(member_full_name)
 
+      if not _is_inspectable(member):
+        continue
+
       member_doc = _parse_md_docstring(member, relative_path,
                                        parser_config.reference_resolver)
 
@@ -1715,6 +1726,8 @@ def generate_global_index(library_name, index, reference_resolver):
   """
   symbol_links = []
   for full_name, py_object in six.iteritems(index):
+    if not _is_inspectable(py_object):
+      continue
     if (tf_inspect.ismodule(py_object) or tf_inspect.isfunction(py_object) or
         tf_inspect.isclass(py_object)):
       # In Python 3, unbound methods are functions, so eliminate those.
