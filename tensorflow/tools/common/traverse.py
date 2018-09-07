@@ -28,11 +28,10 @@ __all__ = ['traverse']
 def _traverse_internal(root, visit, stack, path):
   """Internal helper for traverse."""
 
-  # Only traverse modules and classes
-  if not tf_inspect.isclass(root) and not tf_inspect.ismodule(root):
-    return
-
   try:
+    # Only traverse modules and classes
+    if not tf_inspect.isclass(root) and not tf_inspect.ismodule(root):
+      return
     children = tf_inspect.getmembers(root)
   except ImportError:
     # On some Python installations, some modules do not support enumerating
@@ -43,8 +42,11 @@ def _traverse_internal(root, visit, stack, path):
   visit(path, root, children)
   for name, child in children:
     # Do not descend into built-in modules
-    if tf_inspect.ismodule(
-        child) and child.__name__ in sys.builtin_module_names:
+    try:
+      if tf_inspect.ismodule(
+          child) and child.__name__ in sys.builtin_module_names:
+        continue
+    except ImportError:
       continue
 
     # Break cycles

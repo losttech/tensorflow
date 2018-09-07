@@ -25,6 +25,7 @@ import shutil
 
 import six
 
+from tensorflow.python.platform import tf_logging as logging
 from tensorflow.python.util import tf_inspect
 from tensorflow.tools.common import public_api
 from tensorflow.tools.common import traverse
@@ -99,6 +100,9 @@ def write_docs(output_dir,
     if full_name in parser_config.duplicate_of:
       continue
 
+    if not parser._is_inspectable(py_object):
+      continue
+
     # Methods and some routines are documented only as part of their class.
     if not (tf_inspect.ismodule(py_object) or tf_inspect.isclass(py_object) or
             _is_free_function(py_object, full_name, parser_config.index)):
@@ -128,6 +132,10 @@ def write_docs(output_dir,
 
     # Generate docs for `py_object`, resolving references.
     page_info = parser.docs_for_object(full_name, py_object, parser_config)
+
+    if page_info is None:
+      logging.warn('Cannot make docs for object %s: %r', full_name, py_object)
+      continue
 
     path = os.path.join(output_dir, parser.documentation_path(full_name))
     directory = os.path.dirname(path)
@@ -271,10 +279,10 @@ def extract(py_modules, private_map, do_not_descend_map):
   traverse.traverse(py_modules[0][1], api_visitor)
 
   # Traverse all py_modules after the first:
-  for module_name, module in py_modules[1:]:
-    visitor.set_root_name(module_name)
-    api_visitor.set_root_name(module_name)
-    traverse.traverse(module, api_visitor)
+    for module_name, module in py_modules[1:]:
+      visitor.set_root_name(module_name)
+      api_visitor.set_root_name(module_name)
+      traverse.traverse(module, api_visitor)
 
   return visitor
 
