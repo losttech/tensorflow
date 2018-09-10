@@ -568,6 +568,14 @@ class DocGenerator(object):
     return extract(self._py_modules, self._private_map,
                    self._do_not_descend_map)
 
+  def _write_docs(self, output_dir, parser_config, root_title, search_hints):
+    write_docs(
+        output_dir,
+        parser_config,
+        yaml_toc=self.yaml_toc,
+        root_title=root_title,
+        search_hints=search_hints)
+
   def build(self, flags):
     """Build all the docs.
 
@@ -610,10 +618,9 @@ class DocGenerator(object):
                                             guide_index, flags.base_dir)
     output_dir = os.path.join(flags.output_dir, 'api_docs/python')
 
-    write_docs(
+    self._write_docs(
         output_dir,
         parser_config,
-        yaml_toc=self.yaml_toc,
         root_title=root_title,
         search_hints=getattr(flags, 'search_hints', True))
 
