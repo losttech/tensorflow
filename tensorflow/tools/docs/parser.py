@@ -1636,6 +1636,8 @@ def _get_defined_in(py_object, parser_config):
                            start=parser_config.base_dir)
   except TypeError:  # getfile throws TypeError if py_object is a builtin.
     return _PythonBuiltin()
+  except ValueError:  # relpath breaks if the file is outside the source tree
+    return _PythonBuiltin()  # temporary workaround
 
   # TODO(wicke): If this is a generated file, link to the source instead.
   # TODO(wicke): Move all generated files to a generated/ directory.
