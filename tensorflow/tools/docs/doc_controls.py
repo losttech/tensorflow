@@ -258,7 +258,10 @@ def should_skip(obj):
   if isinstance(obj, property):
     obj = obj.fget
 
-  return hasattr(obj, _DO_NOT_DOC) or hasattr(obj, _DO_NOT_DOC_INHERITABLE)
+  try:
+    return hasattr(obj, _DO_NOT_DOC) or hasattr(obj, _DO_NOT_DOC_INHERITABLE)
+  except ImportError:
+    return False
 
 
 def should_skip_class_attr(cls, name):

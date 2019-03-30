@@ -620,13 +620,15 @@ class DocGenerator(object):
     return extract(self._py_modules, self._private_map,
                    self._do_not_descend_map)
 
-  def _write_docs(self, output_dir, parser_config, root_title, search_hints):
+  def _write_docs(self, output_dir, parser_config, root_title, search_hints,
+                  site_api_path):
     write_docs(
         output_dir,
         parser_config,
         yaml_toc=self.yaml_toc,
         root_title=root_title,
-        search_hints=search_hints)
+        search_hints=search_hints,
+        site_api_path=site_api_path)
 
   def build(self, flags):
     """Build all the docs.

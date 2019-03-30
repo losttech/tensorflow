@@ -47,14 +47,17 @@ def is_free_function(py_object, full_name, index):
     True if the obeject is a stand-alone function, and not part of a class
     definition.
   """
-  if not tf_inspect.isfunction(py_object):
-    return False
+  try:
+      if not tf_inspect.isfunction(py_object):
+        return False
 
-  parent_name = full_name.rsplit('.', 1)[0]
-  if tf_inspect.isclass(index[parent_name]):
-    return False
+      parent_name = full_name.rsplit('.', 1)[0]
+      if tf_inspect.isclass(index[parent_name]):
+        return False
 
-  return True
+      return True
+  except ModuleNotFoundError:
+      return False
 
 
 # A regular expression capturing a python identifier.
