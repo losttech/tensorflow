@@ -292,9 +292,9 @@ class DocControlsAwareCrawler(public_api.PublicAPIVisitor):
   """A `docs_controls` aware API-crawler."""
 
   def _is_private(self, path, name, obj):
-    if doc_controls.should_skip(obj):
+    if super(DocControlsAwareCrawler, self)._is_private(path, name, obj):
       return True
-    return super(DocControlsAwareCrawler, self)._is_private(path, name, obj)
+    return doc_controls.should_skip(obj)
 
 
 def extract(py_modules,
